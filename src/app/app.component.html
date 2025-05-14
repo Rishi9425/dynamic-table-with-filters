@@ -27,28 +27,32 @@
                             </ng-container>
 
 
-                            <!--auto complete filter -->
-                            
-                          <!-- Autocomplete with virtual scroll filter -->
-                         <ng-container *ngIf="column.type === 'autocomplete'">
-  <p-columnFilter field="{{ column.field }}" display="menu" [showOperator]="false" [showMatchModes]="false">
-    <ng-template #filter let-value let-filter="filterCallback">
-      <p-autoComplete
-        [(ngModel)]="selectedItem"
+<!--for autocomplete filter-->
+
+<ng-container *ngIf="column.type === 'autocomplete'">
+  <p-columnFilter 
+    [field]="column.field" 
+    display="menu" 
+    [showOperator]="false" 
+    [showMatchModes]="false">
+    
+    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+      <p-autoComplete 
+        [(ngModel)]="column.selectedItem"
         [suggestions]="filteredItems"
-        (completeMethod)="filterItems($event)"
         [virtualScroll]="true"
         [virtualScrollItemSize]="34"
-        optionLabel="label"
+        (completeMethod)="filterItems($event)"
+        optionLabel="name"
         [dropdown]="true"
-        (onSelect)="filter($event)"
-        [style]="{ width: '100%' }"
-      />
+        (onSelect)="filter($event.value.name)" />
     </ng-template>
+
   </p-columnFilter>
 </ng-container>
 
-                            
+
+
                             <!-- Date filter -->
                             <ng-container *ngIf="column.type === 'date'">
                                 <p-columnFilter type="date" [field]="column.field" display="menu"></p-columnFilter>

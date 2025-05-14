@@ -113,14 +113,15 @@ export class CustomerService {
         return text.charAt(0).toUpperCase() + text.slice(1);
     }
 
-    //autocomplete function
-       generateItems(): any[] {
+
+generateItems(): any[] {
     const items: any[] = [];
-    for (let i = 0; i < 10000; i++) {
-      items.push({ label: 'Item ' + i, value: 'Item ' + i });
+    if (this.customerConfig?.data?.length) {
+        this.customerConfig.data.forEach(customer => items.push({ name: customer.name }));
+    } else {
+        console.error('Customer data is not loaded or empty.');
     }
     return items;
-  }
-
+}
 
 }

@@ -5,6 +5,7 @@ import { Customer, Representative } from '../domain/customer';
 import { CustomerService } from '../service/customerservice.ts.service';
 import { FormsModule } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { filter } from 'rxjs';
 
 interface AutoCompleteCompleteEvent {
     originalEvent: Event;
@@ -40,31 +41,34 @@ export class TableFilterAdvancedDemo implements OnInit {
     selectedItem: any;
   filteredItems: any[] = [];
   items: any[] = [];
-    
+    filterValues: {[key: string]: any} = {};
+     filters: { [key: string]: any } = {};
 
   // Holds the filtered list per field
   filteredAutocompleteItems: { [field: string]: any[] } = {};
 
-  // Full list of items for autocomplete
+  // Full list of items for autocompletegenerateItems
   autocompleteItems: { [field: string]: any[] } = {};
 
 
   constructor(private customerService: CustomerService) {}
 
-
-  
-  filterItems(event: AutoCompleteCompleteEvent): void {
-    const query = event.query.toLowerCase();
-    this.filteredItems = this.items.filter(item =>
-      item.label.toLowerCase().startsWith(query)
-    );
-  }
   ngOnInit() {
     this.loadColumns();
     this.loadData();
     this.loadFilters();
      this.items = this.customerService.generateItems();
+     console.log('Items:', this.items);
   }
+  //for autocomplete
+
+  filterItems(event: AutoCompleteCompleteEvent): void {
+  const query = event.query?.toLowerCase() || '';
+  this.filteredItems = (this.items as any[]).filter(item =>
+    item?.name?.toLowerCase().startsWith(query)
+  );
+}
+
 
   async loadColumns() {
     try {

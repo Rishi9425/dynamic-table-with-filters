@@ -542,16 +542,29 @@ const presetPalette = presetKey ? presets[presetKey].primitive : undefined;
     });
   }
 
-  handleDarkModeTransition(state: ThemeState): void {
-    if (isPlatformBrowser(this.platformId)) {
-      if ((document as any).startViewTransition) {
-        this.startViewTransition(state);
-      } else {
-        this.toggleDarkMode(state);
-        this.onTransitionEnd();
-      }
+ handleDarkModeTransition(state: ThemeState): void {
+  if (isPlatformBrowser(this.platformId)) {
+    const startViewTransition = (document as any).startViewTransition;
+
+    if (startViewTransition) {
+      requestAnimationFrame(() => {
+        try {
+          startViewTransition(() => {
+            this.toggleDarkMode(state);
+          }).ready.then(() => this.onTransitionEnd());
+        } catch (e) {
+          console.error('ViewTransition failed:', e);
+          this.toggleDarkMode(state);
+          this.onTransitionEnd();
+        }
+      });
+    } else {
+      this.toggleDarkMode(state);
+      this.onTransitionEnd();
     }
   }
+}
+
 
   updateColors(event: any, type: string, color: any) {
     if (type === 'primary') {

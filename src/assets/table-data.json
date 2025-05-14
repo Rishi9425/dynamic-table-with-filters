@@ -13,10 +13,7 @@
     {
       "id": 1000,
       "name": "James Butt",
-      "country": {
-        "name": "Algeria",
-        "code": "dz"
-      },
+      "country" : "Algeria",
       "company": "Benton, John B Jr",
       "date": "2015-09-13",
       "status": "unqualified",
@@ -31,10 +28,8 @@
     {
       "id": 1001,
       "name": "Josephine Darakjy",
-      "country": {
-        "name": "Egypt",
-        "code": "eg"
-      },
+       "country" :"Egypt",
+        
       "company": "Chanay, Jeffrey A Esq",
       "date": "2019-02-09",
       "status": "proposal",
@@ -49,10 +44,8 @@
     {
       "id": 1002,
       "name": "Art Venere",
-      "country": {
-        "name": "Panama",
-        "code": "pa"
-      },
+       "country" :"Panama",
+        
       "company": "Chemel, James L Cpa",
       "date": "2017-05-13",
       "status": "qualified",
@@ -67,10 +60,8 @@
     {
       "id": 1003,
       "name": "Lenna Paprocki",
-      "country": {
-        "name": "Slovenia",
-        "code": "si"
-      },
+       "country" : "Slovenia",
+        
       "company": "Feltz Printing Service",
       "date": "2020-09-15",
       "status": "new",
@@ -85,10 +76,8 @@
     {
       "id": 1004,
       "name": "Donette Foller",
-      "country": {
-        "name": "South Africa",
-        "code": "za"
-      },
+       "country" :"South Africa",
+       
       "company": "Printing Dimensions",
       "date": "2016-05-20",
       "status": "proposal",
@@ -103,10 +92,7 @@
     {
       "id": 1005,
       "name": "Simona Morasca",
-      "country": {
-        "name": "Egypt",
-        "code": "eg"
-      },
+       "country" : "Egypt",
       "company": "Chapman, Ross E Esq",
       "date": "2018-02-16",
       "status": "qualified",
@@ -121,10 +107,8 @@
     {
       "id": 1006,
       "name": "Mitsue Tollner",
-      "country": {
-        "name": "Paraguay",
-        "code": "py"
-      },
+      "country" :"Paraguay",
+      
       "company": "Morlong Associates",
       "date": "2018-02-19",
       "status": "renewal",
@@ -139,10 +123,8 @@
     {
       "id": 1007,
       "name": "Leota Dilliard",
-      "country": {
-        "name": "Serbia",
-        "code": "rs"
-      },
+      "country" : "Serbia",
+       
       "company": "Commercial Press",
       "date": "2019-08-13",
       "status": "renewal",
@@ -157,10 +139,8 @@
     {
       "id": 1008,
       "name": "Sage Wieser",
-      "country": {
-        "name": "Egypt",
-        "code": "eg"
-      },
+       "country" :"Egypt",
+       
       "company": "Truhlar And Truhlar Attys",
       "date": "2018-11-21",
       "status": "unqualified",
@@ -175,10 +155,8 @@
     {
       "id": 1009,
       "name": "Kris Marrier",
-      "country": {
-        "name": "Mexico",
-        "code": "mx"
-      },
+       "country" : "Mexico",
+      
       "company": "King, Christopher A Esq",
       "date": "2015-07-07",
       "status": "proposal",
@@ -193,10 +171,8 @@
     {
       "id": 1010,
       "name": "Minna Amigon",
-      "country": {
-        "name": "Romania",
-        "code": "ro"
-      },
+      "country" : "Romania",
+       
       "company": "Dorl, James J Esq",
       "date": "2018-11-07",
       "status": "qualified",
@@ -211,10 +187,8 @@
     {
       "id": 1011,
       "name": "Abel Maclead",
-      "country": {
-        "name": "Singapore",
-        "code": "sg"
-      },
+      "country" :"Singapore",
+       
       "company": "Rangoni Of Florence",
       "date": "2017-03-11",
       "status": "qualified",
