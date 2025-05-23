@@ -5,11 +5,15 @@ import { Customer, Representative } from '../domain/customer';
 import { CustomerService } from '../service/customerservice.ts.service';
 import { FormsModule } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/autocomplete';
-import { filter } from 'rxjs';
 
 interface AutoCompleteCompleteEvent {
     originalEvent: Event;
     query: string;
+}
+
+interface Item {
+  name: string;
+  [key: string]: any;
 }
 
 @Component({
@@ -22,7 +26,7 @@ interface AutoCompleteCompleteEvent {
 export class TableFilterAdvancedDemo implements OnInit {
   title: string = 'table';
 
-  @Input() dataSize: 'mini' | 'small' | 'medium' | 'large' | 'xlarge' | 'api' = 'medium';
+  @Input() dataSize: 'mini' | 'small' | 'medium' | 'large' | 'xlarge' | 'api' = 'api'; // Default to API
   @ViewChild('dt1') table!: Table;
 
   // Dynamic columns configuration
@@ -38,18 +42,10 @@ export class TableFilterAdvancedDemo implements OnInit {
   statuses: { label: string; value: string }[] = [];
   loading: boolean = true;
   activityValues: number[] = [0, 100];
-    selectedItem: any;
-  filteredItems: any[] = [];
-  items: any[] = [];
-    filterValues: {[key: string]: any} = {};
-     filters: { [key: string]: any } = {};
-
-  // Holds the filtered list per field
-  filteredAutocompleteItems: { [field: string]: any[] } = {};
-
-  // Full list of items for autocompletegenerateItems
-  autocompleteItems: { [field: string]: any[] } = {};
-
+  
+  selectedItem: Item | null = null;
+  filteredItems: Item[] = [];
+  items: Item[] = [];
 
   constructor(private customerService: CustomerService) {}
 
@@ -57,18 +53,42 @@ export class TableFilterAdvancedDemo implements OnInit {
     this.loadColumns();
     this.loadData();
     this.loadFilters();
-     this.items = this.customerService.generateItems();
-     console.log('Items:', this.items);
+    // Load unique items for autocomplete
+    this.loadUniqueItems();
   }
-  //for autocomplete
-
+  
+  // Load unique items for autocomplete to avoid duplicates
+  loadUniqueItems() {
+    this.loading = true;
+    this.customerService.generateItems()
+      .then((items: Item[]) => {
+        const uniqueItemsMap = new Map<string, Item>();
+        
+        // Add only unique items to the map with proper type
+        items.forEach((item: Item) => {
+          if (item && item.name) {
+            uniqueItemsMap.set(item.name, item);
+          }
+        });
+        
+        // Convert the Map values back to an array
+        this.items = Array.from(uniqueItemsMap.values());
+        console.log('Unique Items loaded:', this.items.length);
+        this.loading = false;
+      })
+      .catch(error => {
+        console.error('Error loading unique items:', error);
+        this.loading = false;
+      });
+  }
+  
+  // Filter items without duplicates
   filterItems(event: AutoCompleteCompleteEvent): void {
-  const query = event.query?.toLowerCase() || '';
-  this.filteredItems = (this.items as any[]).filter(item =>
-    item?.name?.toLowerCase().startsWith(query)
-  );
-}
-
+    const query = event.query?.toLowerCase() || '';
+    this.filteredItems = this.items.filter((item: Item) =>
+      item?.name?.toLowerCase().startsWith(query)
+    );
+  }
 
   async loadColumns() {
     try {
@@ -78,11 +98,10 @@ export class TableFilterAdvancedDemo implements OnInit {
       // Load filter configuration based on columns
       this.filterConfig = await this.customerService.getFilterConfig();
       
-      // Initialize autocomplete items collections
+      // Initialize columns with autocomplete
       this.columns.forEach(column => {
         if (column.type === 'autocomplete') {
-          this.autocompleteItems[column.field] = [];
-          this.filteredAutocompleteItems[column.field] = [];
+          column.selectedItem = null;
         }
       });
     } catch (error) {
@@ -93,7 +112,8 @@ export class TableFilterAdvancedDemo implements OnInit {
   loadData() {
     this.loading = true;
 
-    let dataPromise: Promise<any[]>;
+    // Always use API data (getCustomers) based on the dataSize parameter for filtering
+    let dataPromise: Promise<Customer[]>;
     switch (this.dataSize) {
       case 'mini':
         dataPromise = this.customerService.getCustomersMini();
@@ -111,67 +131,24 @@ export class TableFilterAdvancedDemo implements OnInit {
         dataPromise = this.customerService.getCustomersXLarge();
         break;
       case 'api':
+      default:
         dataPromise = this.customerService.getCustomers();
         break;
-      default:
-        dataPromise = this.customerService.getCustomersMedium();
     }
 
-    dataPromise.then((customers) => {
-      this.customers = customers.map(customer => ({
-        ...customer,
-        date: typeof customer.date === 'string' ? new Date(customer.date) : customer.date
-      }));
-      this.loading = false;
-      
-      // Extract unique values for autocomplete fields
-      this.populateAutocompleteItems();
-    }).catch(error => {
-      console.error('Error loading customer data:', error);
-      this.loading = false;
-    });
-  }
-
-  // Populate autocomplete items with actual data from the dataset
-  populateAutocompleteItems() {
-    this.columns.forEach(column => {
-      if (column.type === 'autocomplete') {
-        const field = column.field;
-        
-        // Get the unique values from the data
-        const uniqueValues = new Set<string>();
-        
-        this.customers.forEach(customer => {
-          const value = this.getFieldValue(customer, field);
-          if (value !== null && value !== undefined && value !== '') {
-            // Handle both string values and object values with a name property
-            if (typeof value === 'object' && value.name) {
-              uniqueValues.add(value.name);
-            } else if (typeof value === 'string') {
-              uniqueValues.add(value);
-            }
-          }
-        });
-        
-        // Create items for autocomplete
-        this.autocompleteItems[field] = Array.from(uniqueValues).map(val => ({
-          name: val,
-          value: val
+    dataPromise
+      .then((customers: Customer[]) => {
+        // Ensure dates are properly formatted
+        this.customers = customers.map(customer => ({
+          ...customer,
+          date: typeof customer.date === 'string' ? new Date(customer.date) : customer.date
         }));
-        
-        // Initialize filtered list with all items
-        this.filteredAutocompleteItems[field] = [...this.autocompleteItems[field]];
-      }
-    });
-  }
-
-  // Method to filter autocomplete suggestions based on user input
-  filterAutocomplete(event: AutoCompleteCompleteEvent, field: string) {
-    const query = event.query.toLowerCase();
-    
-    this.filteredAutocompleteItems[field] = this.autocompleteItems[field].filter(
-      item => item.name.toLowerCase().indexOf(query) !== -1
-    );
+        this.loading = false;
+      })
+      .catch(error => {
+        console.error('Error loading customer data:', error);
+        this.loading = false;
+      });
   }
 
   async loadFilters() {
@@ -204,6 +181,13 @@ export class TableFilterAdvancedDemo implements OnInit {
   clear(table: Table) {
     table.clear();
     this.activityValues = [0, 100];
+    
+    // Reset selected autocomplete items
+    this.columns.forEach(column => {
+      if (column.type === 'autocomplete') {
+        column.selectedItem = null;
+      }
+    });
   }
 
   getSeverity(status: string) {
@@ -243,11 +227,5 @@ export class TableFilterAdvancedDemo implements OnInit {
       return 'min-width:10rem';
     } 
     return 'min-width:15rem';
-  }
-
-  // Helper methods for column filtering
-  isDateFilterActive(field: string): boolean {
-    if (!this.table) return false;
-    return this.table.hasFilter();
   }
 }

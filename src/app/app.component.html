@@ -23,7 +23,7 @@
                             
                             <!-- Text filter -->
                             <ng-container *ngIf="column.type === 'text'">
-                                <p-columnFilter type="text" [field]="column.field" display="menu" />
+                                <p-columnFilter type="text" [field]="column.field" display="menu" placeholder="Search"/>
                             </ng-container>
 
 
@@ -35,9 +35,10 @@
     display="menu" 
     [showOperator]="false" 
     [showMatchModes]="false">
-    
+   
     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
       <p-autoComplete 
+       placeholder="Search Name"
         [(ngModel)]="column.selectedItem"
         [suggestions]="filteredItems"
         [virtualScroll]="true"
@@ -50,17 +51,14 @@
 
   </p-columnFilter>
 </ng-container>
-
-
-
                             <!-- Date filter -->
                             <ng-container *ngIf="column.type === 'date'">
-                                <p-columnFilter type="date" [field]="column.field" display="menu"></p-columnFilter>
+                                <p-columnFilter type="date" [field]="column.field" display="menu" placeholder="Search Date"></p-columnFilter>
                             </ng-container>
                             
                             <!-- Currency filter -->
                             <ng-container *ngIf="column.type === 'currency'">
-                                <p-columnFilter type="numeric" [field]="column.field" display="menu" [currency]="column.currency" />
+                                <p-columnFilter type="numeric" [field]="column.field" display="menu" [currency]="column.currency " placeholder="Search Currency"/>
                             </ng-container>
                             
                             <!-- Boolean filter -->
